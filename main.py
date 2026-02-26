@@ -14,4 +14,4 @@ app = FastAPI()
 
 @app.get("/{table_name}")
 async def select_all(table_name: str):
-    # TODO
+

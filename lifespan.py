@@ -2,10 +2,14 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException
 import asyncpg
 
-# Loading from an environment variable (.env)
-DATABASE_URL = # TODO
+from config import Settings
 
-# Global variable to hold our connection pool
+settings = Settings()
+
+# Loading from an environment variable (.env)
+DATABASE_URL = f"postgresql://{settings.DB_USER}:{settings.DB_PASSWORD}@localhost{settings.DB_PORT}/{settings.DB_NAME}"
+
+# Global variable to hold connection pool
 db_pool = None
 
 @asynccontextmanager
@@ -13,13 +17,11 @@ async def lifespan(app: FastAPI):
     global db_pool
 
     # Create the connection pool
-    print("Connecting to PostgreSQL...")
     db_pool = await asyncpg.create_pool(DATABASE_URL, min_size=1, max_size=10)
 
-    yield  # The FastAPI app runs while paused here
+    yield
 
     # Close the pool
-    print("Closing PostgreSQL connection...")
     await db_pool.close()
 
 # Initialize FastAPI with the lifespan
