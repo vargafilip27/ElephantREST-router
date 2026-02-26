@@ -26,3 +26,13 @@ async def lifespan(app: FastAPI):
 
 # Initialize FastAPI with the lifespan
 app = FastAPI(lifespan=lifespan)
+
+
+from fastapi import Depends
+
+async def get_db():
+    if db_pool is None:
+        raise Exception("Database pool is not initialized.")
+
+    async with db_pool.acquire() as connection:
+        yield connection
